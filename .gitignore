@@ -208,3 +208,7 @@ __marimo__/
 
 # Project generated outputs
 outputs/
+
+# Real datasets (keep repo small)
+data/hdfs_logs.txt
+data/hdfs_labels.csv

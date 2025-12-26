@@ -30,21 +30,20 @@ def main() -> None:
 
     missing = [c for c in feature_columns if c not in df.columns]
     if missing:
-        raise ValueError(f"features.csv is missing columns needed by model: {missing}")
+        raise ValueError(f"features.csv missing columns needed by model: {missing}")
 
     X = df[feature_columns].copy()
 
-    # decision_function: higher = more normal, lower = more anomalous
-    normality_score = model.decision_function(X)
+    # score_samples: higher = more normal; lower = more anomalous
+    raw_score = model.score_samples(X)
 
-    # Convert to "anomaly score" where higher = more suspicious
-    anomaly_score = -normality_score
+    # make higher = more suspicious (easier to read)
+    anomaly_score = -raw_score
 
     result = df.copy()
-    result["normality_score"] = normality_score
+    result["raw_score"] = raw_score
     result["anomaly_score"] = anomaly_score
 
-    # Most suspicious first
     result = result.sort_values(by="anomaly_score", ascending=False)
 
     os.makedirs(output_dir, exist_ok=True)

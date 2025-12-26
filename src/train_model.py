@@ -14,13 +14,14 @@ FEATURE_COLUMNS = [
     "keyword_hit_count",
     "has_error_keyword",
     "has_auth_keyword",
+    "template_freq",   # IMPORTANT: new feature
 ]
 
 
 def main() -> None:
     repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    features_path = os.path.join(repo_root, "outputs", "features.csv")
     output_dir = os.path.join(repo_root, "outputs")
+    features_path = os.path.join(output_dir, "features.csv")
     os.makedirs(output_dir, exist_ok=True)
 
     if not os.path.exists(features_path):
@@ -36,11 +37,11 @@ def main() -> None:
 
     X = df[FEATURE_COLUMNS].copy()
 
-    # Isolation Forest is unsupervised; contamination is our estimate of anomaly rate.
     model = IsolationForest(
         n_estimators=200,
-        contamination=0.05,   # assume ~5% suspicious; we can tune later
+        contamination=0.05,  # estimate of anomaly rate; we’ll evaluate with top-K
         random_state=42,
+        n_jobs=-1,
     )
     model.fit(X)
 
